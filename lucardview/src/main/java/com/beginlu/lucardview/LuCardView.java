@@ -6,11 +6,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -73,8 +73,9 @@ public class LuCardView extends CardView {
         setTitle(title);
         String summary = array.getString(R.styleable.CardView_summary);
         setSummary(summary);
-        boolean type = array.getBoolean(R.styleable.CardView_type, false);
-        setType(type);
+        this.type = array.getBoolean(R.styleable.CardView_type, false);
+        if (type)
+            viewContent.setVisibility(VISIBLE);
     }
 
     /**
@@ -125,12 +126,20 @@ public class LuCardView extends CardView {
             }
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //重新测量下ViewContent的大小
-        int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        viewContent.measure(w, h);
-        this.viewContentWidth = viewContent.getMeasuredWidth();
-        this.viewContentHeight = viewContent.getMeasuredHeight();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (viewContent.getChildCount() == 1) {
+            //重新测量下ViewContent的大小
+            final int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            final int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            View view = viewContent.getChildAt(0);
+            view.measure(w, h);
+            this.viewContentWidth = view.getMeasuredWidth();
+            this.viewContentHeight = view.getMeasuredHeight();
+        }
     }
 
     /**
@@ -156,6 +165,16 @@ public class LuCardView extends CardView {
                         (int) (viewTitle.getHeight() + (int) animation.getAnimatedValue() * (viewContentHeight / 50.0) + 0.5));
                 //修改自定义View的margin值
                 layoutParams.setMargins(0, (int) animation.getAnimatedValue(), 0, (int) animation.getAnimatedValue());
+                supportView.setLayoutParams(layoutParams);
+            }
+        });
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                ViewGroup.LayoutParams layoutParams = supportView.getLayoutParams();
+                layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+                layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
                 supportView.setLayoutParams(layoutParams);
             }
         });
