@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -18,7 +19,7 @@ import android.widget.TextView;
  * Created by BeginLu on 2017/2/24.
  */
 
-public class LuCardView extends CardView {
+public class LuCardView extends RelativeLayout {
     private final String TAG = "CardView";
     private final RelativeLayout viewContent;
     private final View viewTitle;
@@ -46,9 +47,9 @@ public class LuCardView extends CardView {
     //这个函数主要就是完成了一下基本视图的获取和初始化
     public LuCardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.supportView = this;
         //获取基本视图
         this.view = View.inflate(context, R.layout.view_cardview, null);
+        supportView = (CardView) view;
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         //添加到View中
         this.addView(view);
@@ -129,8 +130,9 @@ public class LuCardView extends CardView {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+
         if (viewContent.getChildCount() == 1) {
             //重新测量下ViewContent的大小
             final int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -161,11 +163,17 @@ public class LuCardView extends CardView {
             public void onAnimationUpdate(ValueAnimator animation) {
                 //获取到当前的Value值
                 //修改自定义View的高度
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
                         (int) (viewTitle.getHeight() + (int) animation.getAnimatedValue() * (viewContentHeight / 50.0) + 0.5));
                 //修改自定义View的margin值
-                layoutParams.setMargins(0, (int) animation.getAnimatedValue(), 0, (int) animation.getAnimatedValue());
+                layoutParams.setMargins(
+                        0,
+                        (int) animation.getAnimatedValue(),
+                        0,
+                        (int) animation.getAnimatedValue());
                 supportView.setLayoutParams(layoutParams);
+                Log.d(TAG, "supportViewHeight:" + supportView.getHeight() + "  contentHeight:" + viewContentHeight + "   titleHeight:" + viewTitle.getHeight());
             }
         });
         valueAnimator.addListener(new AnimatorListenerAdapter() {
@@ -176,6 +184,7 @@ public class LuCardView extends CardView {
                 layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
                 layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
                 supportView.setLayoutParams(layoutParams);
+                Log.d(TAG, "supportViewHeight:" + supportView.getHeight() + "  contentHeight:" + viewContentHeight + "   titleHeight:" + viewTitle.getHeight());
             }
         });
         valueAnimator.start();

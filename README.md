@@ -46,9 +46,13 @@ date: 2017/1/6 15:38:00
 - 为打开动画添加End监听，动画结束后修改Content高度为WRAP_CONTENT
 - 可以嵌套CardView了
 
+2017-3-2
+- 修复了父布局必须为RelativeLayout
+
 ##PS
 展示发现了一些Bug，待解决。
 
 - ~~Content内容为空时CardView无法展示(划掉)~~
 - 箭头是文字的>太丑了
-- 父布局必须为RelativeLayout
+- ~~父布局必须为RelativeLayout(划掉)~~
+- 子布局为LuCardView的时候...展开和关闭会有闪烁一下，打开一次子LuCardView后问题消失
