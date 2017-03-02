@@ -1,8 +1,8 @@
 ---
-title: My Note's Title
-tags: misc, sublime
-notebook: My Notebook 
-date: 2017/1/6 15:38:00
+title: LuCardView
+tags: sublime
+notebook: Github
+date: 2017/3/1 15:38:00
 ---
 # LuCardView
 ##简介咯
